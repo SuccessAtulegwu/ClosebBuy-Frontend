@@ -1,0 +1,87 @@
+
+export enum AccountTypes {
+    VENDOR = 'VENDOR',
+    ADMIN = 'ADMIN',
+    RESIDENT = 'RESIDENT',
+    ESTATEMANAGER = 'ESTATEMANAGER',
+    SALES = 'SALES',
+    DELIVERY_AGENT = 'DELIVERY_AGENT'
+}
+
+export enum VendorStatus {
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
+    SUSPENDED = 'SUSPENDED'
+}
+
+export enum OrderStatus {
+    PENDING = 'PENDING',
+    PAID = 'PAID',
+    SHIPPED = 'SHIPPED',
+    COMPLETED = 'COMPLETED',
+    CANCELED = 'CANCELED',
+    CONFIRMED = 'CONFIRMED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    DELIVERED = 'DELIVERED',
+    ORDER_PLACED = 'ORDER_PLACED',
+    ORDER_ASSIGNED = 'ORDER_ASSIGNED',
+    AWAITING_RIDER_ACK = 'AWAITING_RIDER_ACK',
+}
+
+export enum PaymentStatus {
+    PENDING = 'PENDING',
+    SUCCESS = 'SUCCESS',
+    FAILED = 'FAILED',
+    REFUNDED = 'REFUNDED'
+}
+
+export enum PaymentMethod {
+    CASH = 'CASH',
+    CARD = 'CARD',
+    TRANSFER = 'TRANSFER',
+    WALLET = 'WALLET',
+    GATEWAY = 'GATEWAY'
+}
+
+export enum NotificationType {
+    SYSTEM = 'SYSTEM',
+    ORDER = 'ORDER',
+    PAYMENT = 'PAYMENT',
+    ORDER_UPDATE = 'ORDER_UPDATE',
+    DELIVERY = 'DELIVERY',
+    MESSAGE = 'MESSAGE',
+    WITHDRAWAL = 'WITHDRAWAL',
+    PENDING = 'PENDING',
+    PAID = 'PAID',
+    SHIPPED = 'SHIPPED',
+    COMPLETED = 'COMPLETED',
+    CANCELED = 'CANCELED',
+    CONFIRMED = 'CONFIRMED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    DELIVERED = 'DELIVERED',
+    ORDER_PLACED = 'ORDER_PLACED',
+    ORDER_ASSIGNED = 'ORDER_ASSIGNED',
+    AWAITING_RIDER_ACK = 'AWAITING_RIDER_ACK',
+    RIDER_ACKNOWLEDGED = 'RIDER_ACKNOWLEDGED'
+}
+
+export enum PayoutStatus {
+    PENDING = 'PENDING',
+    PROCESSING = 'PROCESSING',
+    PAID = 'PAID',
+    REJECTED = 'REJECTED'
+}
+
+export enum TransactionStatus {
+    PENDING = 'PENDING',
+    CONFIRMED = 'CONFIRMED',
+    FAILED = 'FAILED'
+}
+
+export enum WithdrawalStatus {
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
+    PAID = 'PAID'
+}

@@ -37,3 +37,5 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# setx /M REACT_NATIVE_PACKAGER_HOSTNAME 192.168.0.104
