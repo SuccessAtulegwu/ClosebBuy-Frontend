@@ -20,7 +20,7 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
     error: "#DC3545",
-    success: "#28A745",
+    success: "#8BC34A",
     warning: "#FFC107"
   },
   dark: {
@@ -30,7 +30,7 @@ export const Colors = {
     icon: '#9BA1A6',
     primary: '#3B82F6',
     cardcolor: '#1F2937',
-    secondary: '#34D399',
+    secondary: '#8BC34A',
     accent: '#F59E0B',
     tabIconDefault: '#9BA1A6',
     background_input: '#2C2C2C',

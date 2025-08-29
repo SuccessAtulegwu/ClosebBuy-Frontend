@@ -305,7 +305,7 @@ function getStyles(theme: any) {
             flexDirection: 'row',
             alignItems: 'center',
             backgroundColor: theme.cardcolor,
-            borderRadius: 25,
+            borderRadius: 16,
             paddingHorizontal: 15,
             paddingVertical: 12,
             marginRight: 10,
@@ -318,7 +318,7 @@ function getStyles(theme: any) {
         },
         micButton: {
             backgroundColor: '#f0f0f0',
-            borderRadius: 25,
+            borderRadius: 16,
             width: 45,
             height: 45,
             justifyContent: 'center',

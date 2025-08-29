@@ -10,7 +10,7 @@ export function LandingScreen() {
   const router = useRouter();
   useEffect(() => {
     const checkFirstTime = async () => {
-      router.replace('/(tabs)')
+      router.replace('/(routes)/auth/google')
     };
 
     checkFirstTime();

@@ -23,6 +23,9 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(routes)/auth/google" options={{ headerShown: false }} />
+        <Stack.Screen name="(routes)/auth/login" options={{ headerShown: false }} />
+        <Stack.Screen name="(routes)/auth/signup" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
