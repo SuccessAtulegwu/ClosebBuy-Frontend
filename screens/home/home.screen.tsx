@@ -1,5 +1,5 @@
 import { FlatList, Pressable, ScrollView, StyleSheet, Switch, Text, Image, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ThemeContext } from '@/context/ThemeContext';
 import { ThemedView } from '@/components/ThemedView';
 import { Stack } from 'expo-router';
@@ -62,6 +62,7 @@ export function HomeScreen() {
     const minPriceNum = Number(minPrice) || 0;
     const maxPriceNum = Number(maxPrice) || Number.MAX_SAFE_INTEGER;
     const [unreadCount, setUnreadCount] = useState(90);
+
 
     const filtered = useMemo(() => {
         return PRODUCTS.filter((p) => {
