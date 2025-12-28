@@ -6,16 +6,19 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters'
 import { fontFamilies, fontSizes } from '@/constants/app.constants'
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { router } from 'expo-router'
+import { router, useRouter } from 'expo-router'
 import { ThemedView } from './ThemedView';
 import { ThemedText } from './ThemedText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAppSelector } from '@/redux/hooks';
 
 type Props = {
     title: string;
+    showCartIcon?: boolean;
+    showNotificationIcon?: boolean;
 }
 const SCREEN_WIDTH = Dimensions.get('window').width;
-export function HomeHeader({ title }: Props) {
+export function HomeHeader({ title, showCartIcon = false, showNotificationIcon = false }: Props) {
     const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
     const [notificationCount, setNotificationCount] = useState(900);
     const [unreadCount, setUnreadCount] = useState(90);
@@ -24,10 +27,22 @@ export function HomeHeader({ title }: Props) {
     const styles = getStyles(theme);
     const scrollRef = useRef<ScrollView | null>(null);
     const tabLayouts = useRef<Record<string, { x: number; width: number }>>({});
+    const router = useRouter();
+    
+    // Get cart items count from Redux
+    const cartItemsCount = useAppSelector((state) => state.cart.totalItems);
 
     const handleTabPress = (tabKey: string) => {
         const layout = tabLayouts.current[tabKey];
         scrollRef.current?.scrollTo({ x: Math.max(layout.x - SCREEN_WIDTH / 2 + layout.width / 2, 0), animated: true });
+    }
+
+    const navigateToNotification = () =>{
+        router.push('/(routes)/notification/notification')
+    }
+
+    const navigateToCart = () => {
+        router.push('/(routes)/cart/cart')
     }
 
 
@@ -36,32 +51,38 @@ export function HomeHeader({ title }: Props) {
             <ThemedView style={[{ paddingTop: inset.top }]}>
                 <ThemedView style={[styles.container]}>
                     <ThemedText style={[styles.headerTitle, { color }]}>{title}</ThemedText>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity>
-                            <View style={styles.iconWrapper}>
-                                <MaterialCommunityIcons name="cart-outline" size={24} color={theme.text} />
-                                {unreadCount > 0 && (
-                                    <View style={styles.badge}>
-                                        <Text style={styles.badgeText}>
-                                            {unreadCount > 9 ? '9+' : unreadCount}
-                                        </Text>
+                    {(showCartIcon || showNotificationIcon) && (
+                        <View style={styles.iconContainer}>
+                            {showCartIcon && (
+                                <TouchableOpacity onPress={navigateToCart}>
+                                    <View style={styles.iconWrapper}>
+                                        <MaterialCommunityIcons name="cart-outline" size={24} color={theme.text} />
+                                        {cartItemsCount > 0 && (
+                                            <View style={styles.badge}>
+                                                <Text style={styles.badgeText}>
+                                                    {cartItemsCount > 9 ? '9+' : cartItemsCount}
+                                                </Text>
+                                            </View>
+                                        )}
                                     </View>
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.iconWrapper}>
-                                <Feather name="bell" size={24} color={theme.text} />
-                                {unreadCount > 0 && (
-                                    <View style={styles.badge}>
-                                        <Text style={styles.badgeText}>
-                                            {unreadCount > 9 ? '9+' : unreadCount}
-                                        </Text>
+                                </TouchableOpacity>
+                            )}
+                            {showNotificationIcon && (
+                                <TouchableOpacity onPress={() => navigateToNotification()}>
+                                    <View style={styles.iconWrapper}>
+                                        <Feather name="bell" size={20} color={theme.text} />
+                                        {unreadCount > 0 && (
+                                            <View style={styles.badge}>
+                                                <Text style={styles.badgeText}>
+                                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                                </Text>
+                                            </View>
+                                        )}
                                     </View>
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    )}
                 </ThemedView>
                 <View style={styles.filtersWrapperTop}>
 

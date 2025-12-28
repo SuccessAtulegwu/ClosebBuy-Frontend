@@ -2,13 +2,14 @@ import { FlatList, Pressable, ScrollView, StyleSheet, Switch, Text, Image, TextI
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ThemeContext } from '@/context/ThemeContext';
 import { ThemedView } from '@/components/ThemedView';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { HomeHeader } from '@/components/HomeHeader';
 import { Feather, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontFamilies } from '@/constants/app.constants';
 import { categoriesList, Category, sampleProducts } from '@/constants/app.data';
 import { ProductCart } from '@/components/ProductCart';
+import { useAppSelector } from '@/redux/hooks';
 
 type Product = {
     id: number;
@@ -62,21 +63,25 @@ export function HomeScreen() {
     const minPriceNum = Number(minPrice) || 0;
     const maxPriceNum = Number(maxPrice) || Number.MAX_SAFE_INTEGER;
     const [unreadCount, setUnreadCount] = useState(90);
+    const router = useRouter();
+
+    // Get cart items count from Redux
+    const cartItemsCount = useAppSelector((state) => state.cart.totalItems);
 
 
     const filtered = useMemo(() => {
-        return PRODUCTS.filter((p) => {
+        return sampleProducts.filter((p) => {
             const matchesSearch =
                 !search ||
                 p.name.toLowerCase().includes(search.trim().toLowerCase());
-            const matchesVendor =
-                selectedVendorId === null || p.vendorId === selectedVendorId;
-            const matchesShop =
-                selectedShopId === null || p.shopId === selectedShopId;
+            // const matchesVendor =
+            //     selectedVendorId === null || p.vendorId === selectedVendorId;
+            // const matchesShop =
+            //     selectedShopId === null || p.shopId === selectedShopId;
             const matchesStock = !inStockOnly || p.inStock;
             const matchesPrice = p.price >= minPriceNum && p.price <= maxPriceNum;
             return (
-                matchesSearch && matchesVendor && matchesShop && matchesStock && matchesPrice
+                matchesSearch && matchesStock && matchesPrice
             );
         });
     }, [search, selectedVendorId, selectedShopId, inStockOnly, minPriceNum, maxPriceNum]);
@@ -90,20 +95,28 @@ export function HomeScreen() {
         setMaxPrice('');
     };
 
-    const handleCategoryPress =(category:any)=>{
-       // console.log('cat',category)
+    const handleCategoryPress = (category: any) => {
+        // console.log('cat',category)
     }
 
     const renderCategory = (category: Category) => (
         <TouchableOpacity
             key={category.id}
             style={[styles.categoryItem, { backgroundColor: category.color }]}
-        onPress={() => handleCategoryPress(category)}
+            onPress={() => handleCategoryPress(category)}
         >
             <Ionicons name={category.icon as any} size={24} color="white" />
             <Text style={styles.categoryText}>{category.name}</Text>
         </TouchableOpacity>
     );
+
+    const navigateToNotification = () => {
+        router.push('/(routes)/notification/notification')
+    }
+
+    const navigateToCart = () => {
+        router.push('/(routes)/cart/cart')
+    }
 
     return (
         <>
@@ -116,19 +129,19 @@ export function HomeScreen() {
                         </Text>
                     </View>
                     <View style={styles.iconContainer}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={navigateToCart}>
                             <View style={styles.iconWrapper}>
                                 <MaterialCommunityIcons name="cart-outline" size={24} color={theme.text} />
-                                {unreadCount > 0 && (
+                                {cartItemsCount > 0 && (
                                     <View style={styles.badge}>
                                         <Text style={styles.badgeText}>
-                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                            {cartItemsCount > 9 ? '9+' : cartItemsCount}
                                         </Text>
                                     </View>
                                 )}
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigateToNotification()}>
                             <View style={styles.iconWrapper}>
                                 <Feather name="bell" size={20} color={theme.text} />
                                 {unreadCount > 0 && (
@@ -165,7 +178,14 @@ export function HomeScreen() {
                             placeholder="Search Anything..."
                             style={styles.searchInput}
                             placeholderTextColor="#999"
+                            value={search}
+                            onChangeText={setSearch}
                         />
+                        {search.length > 0 && (
+                            <TouchableOpacity onPress={() => setSearch('')}>
+                                <Ionicons name="close-circle" size={20} color="#999" />
+                            </TouchableOpacity>
+                        )}
                     </View>
                     <View style={styles.micButton}>
                         <Ionicons name="filter-circle-outline" size={28} color="#5cb85c" />
@@ -208,7 +228,7 @@ export function HomeScreen() {
                 </View>
 
                 <ProductCart
-                    products={sampleProducts}
+                    products={filtered}
                     title="Fresh Fruits"
                 />
             </ScrollView>

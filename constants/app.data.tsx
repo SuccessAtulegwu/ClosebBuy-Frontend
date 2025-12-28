@@ -8,11 +8,11 @@ export interface Category {
 }
 
 export const categoriesList: Category[] = [
-    { id: 1, name: 'Groceries', icon: 'leaf', library: 'Ionicons', color: '#5cb85c' },
-    { id: 2, name: 'Fresh Produce', icon: 'nutrition-outline', library: 'Ionicons', color: '#27ae60' },
+   // { id: 1, name: 'Groceries', icon: 'leaf', library: 'Ionicons', color: '#5cb85c' },
+    //{ id: 2, name: 'Fresh Produce', icon: 'nutrition-outline', library: 'Ionicons', color: '#27ae60' }, 
     { id: 3, name: 'Fruits', icon: 'leaf-outline', library: 'Ionicons', color: '#e74c3c' },
-    { id: 4, name: 'Vegetables', icon: 'flower-outline', library: 'Ionicons', color: '#2ecc71' },
-    { id: 5, name: 'Meat & Poultry', icon: 'restaurant-outline', library: 'Ionicons', color: '#c0392b' },
+   // { id: 4, name: 'Vegetables', icon: 'flower-outline', library: 'Ionicons', color: '#2ecc71' },
+   // { id: 5, name: 'Meat & Poultry', icon: 'restaurant-outline', library: 'Ionicons', color: '#c0392b' },
     { id: 6, name: 'Seafood', icon: 'fish-outline', library: 'Ionicons', color: '#3498db' },
     { id: 7, name: 'Dairy & Eggs', icon: 'egg-outline', library: 'Ionicons', color: '#45b7d1' },
     { id: 8, name: 'Bakery', icon: 'pizza-outline', library: 'Ionicons', color: '#f9ca24' },
@@ -41,92 +41,92 @@ export const categoriesList: Category[] = [
     { id: 25, name: 'Skincare', icon: 'sparkles-outline', library: 'Ionicons', color: '#fd79a8' },
     { id: 26, name: 'Hair Care', icon: 'cut-outline', library: 'Ionicons', color: '#9b59b6' },
     { id: 27, name: 'Oral Care', icon: 'brush', library: 'Ionicons', color: '#00cec9' },
-    { id: 28, name: 'Health & Medicine', icon: 'medical-outline', library: 'Ionicons', color: '#e74c3c' },
-    { id: 29, name: 'Vitamins', icon: 'fitness-outline', library: 'Ionicons', color: '#2ecc71' },
-    { id: 30, name: 'Personal Hygiene', icon: 'body-outline', library: 'Ionicons', color: '#74b9ff' },
+   // { id: 28, name: 'Health & Medicine', icon: 'medical-outline', library: 'Ionicons', color: '#e74c3c' },
+    //{ id: 29, name: 'Vitamins', icon: 'fitness-outline', library: 'Ionicons', color: '#2ecc71' },
+    //{ id: 30, name: 'Personal Hygiene', icon: 'body-outline', library: 'Ionicons', color: '#74b9ff' },
 
     // Household & Cleaning
-    { id: 31, name: 'Cleaning Supplies', icon: 'brush', library: 'Ionicons', color: '#00b894' },
-    { id: 32, name: 'Laundry', icon: 'shirt-outline', library: 'Ionicons', color: '#0984e3' },
-    { id: 33, name: 'Paper Products', icon: 'receipt-outline', library: 'Ionicons', color: '#636e72' },
-    { id: 34, name: 'Trash & Storage', icon: 'trash-outline', library: 'Ionicons', color: '#2d3436' },
+    //{ id: 31, name: 'Cleaning Supplies', icon: 'brush', library: 'Ionicons', color: '#00b894' },
+   // { id: 32, name: 'Laundry', icon: 'shirt-outline', library: 'Ionicons', color: '#0984e3' },
+    //{ id: 33, name: 'Paper Products', icon: 'receipt-outline', library: 'Ionicons', color: '#636e72' },
+    //{ id: 34, name: 'Trash & Storage', icon: 'trash-outline', library: 'Ionicons', color: '#2d3436' },
     { id: 35, name: 'Air Fresheners', icon: 'leaf', library: 'Ionicons', color: '#55a3ff' },
 
     // Home & Garden
-    { id: 36, name: 'Home Decor', icon: 'home-outline', library: 'Ionicons', color: '#e17055' },
-    { id: 37, name: 'Furniture', icon: 'bed-outline', library: 'Ionicons', color: '#9b59b6' },
-    { id: 38, name: 'Kitchen Appliances', icon: 'restaurant', library: 'Ionicons', color: '#4a90e2' },
-    { id: 39, name: 'Garden & Plants', icon: 'flower', library: 'Ionicons', color: '#27ae60' },
-    { id: 40, name: 'Tools & Hardware', icon: 'build-outline', library: 'Ionicons', color: '#7f8c8d' },
-    { id: 41, name: 'Lighting', icon: 'bulb-outline', library: 'Ionicons', color: '#f1c40f' },
+   // { id: 36, name: 'Home Decor', icon: 'home-outline', library: 'Ionicons', color: '#e17055' },
+   // { id: 37, name: 'Furniture', icon: 'bed-outline', library: 'Ionicons', color: '#9b59b6' },
+   // { id: 38, name: 'Kitchen Appliances', icon: 'restaurant', library: 'Ionicons', color: '#4a90e2' },
+    //{ id: 39, name: 'Garden & Plants', icon: 'flower', library: 'Ionicons', color: '#27ae60' },
+    //{ id: 40, name: 'Tools & Hardware', icon: 'build-outline', library: 'Ionicons', color: '#7f8c8d' },
+    //{ id: 41, name: 'Lighting', icon: 'bulb-outline', library: 'Ionicons', color: '#f1c40f' },
 
     // Fashion & Accessories
-    { id: 42, name: 'Fashion', icon: 'shirt', library: 'Ionicons', color: '#c44569' },
-    { id: 43, name: 'Men\'s Clothing', icon: 'man-outline', library: 'Ionicons', color: '#2c3e50' },
-    { id: 44, name: 'Women\'s Clothing', icon: 'woman-outline', library: 'Ionicons', color: '#e91e63' },
-    { id: 45, name: 'Shoes', icon: 'footsteps-outline', library: 'Ionicons', color: '#795548' },
-    { id: 46, name: 'Accessories', icon: 'watch-outline', library: 'Ionicons', color: '#ff6348' },
-    { id: 47, name: 'Bags & Luggage', icon: 'bag-outline', library: 'Ionicons', color: '#8e44ad' },
+    //{ id: 42, name: 'Fashion', icon: 'shirt', library: 'Ionicons', color: '#c44569' },
+    //{ id: 43, name: 'Men\'s Clothing', icon: 'man-outline', library: 'Ionicons', color: '#2c3e50' },
+    //{ id: 44, name: 'Women\'s Clothing', icon: 'woman-outline', library: 'Ionicons', color: '#e91e63' },
+    //{ id: 45, name: 'Shoes', icon: 'footsteps-outline', library: 'Ionicons', color: '#795548' },
+    //{ id: 46, name: 'Accessories', icon: 'watch-outline', library: 'Ionicons', color: '#ff6348' },
+    //{ id: 47, name: 'Bags & Luggage', icon: 'bag-outline', library: 'Ionicons', color: '#8e44ad' },
 
     // Electronics & Tech
-    { id: 48, name: 'Electronics', icon: 'phone-portrait-outline', library: 'Ionicons', color: '#2d3436' },
-    { id: 49, name: 'Mobile Phones', icon: 'phone-portrait', library: 'Ionicons', color: '#00cec9' },
-    { id: 50, name: 'Computers & Tablets', icon: 'laptop-outline', library: 'Ionicons', color: '#636e72' },
-    { id: 51, name: 'TV & Audio', icon: 'tv-outline', library: 'Ionicons', color: '#2c3e50' },
-    { id: 52, name: 'Gaming', icon: 'game-controller-outline', library: 'Ionicons', color: '#9c88ff' },
-    { id: 53, name: 'Cameras', icon: 'camera-outline', library: 'Ionicons', color: '#ff6b6b' },
-    { id: 54, name: 'Chargers & Cables', icon: 'power-outline', library: 'Ionicons', color: '#34495e' },
+    //{ id: 48, name: 'Electronics', icon: 'phone-portrait-outline', library: 'Ionicons', color: '#2d3436' },
+    //{ id: 49, name: 'Mobile Phones', icon: 'phone-portrait', library: 'Ionicons', color: '#00cec9' },
+    //{ id: 50, name: 'Computers & Tablets', icon: 'laptop-outline', library: 'Ionicons', color: '#636e72' },
+    //{ id: 51, name: 'TV & Audio', icon: 'tv-outline', library: 'Ionicons', color: '#2c3e50' },
+    //{ id: 52, name: 'Gaming', icon: 'game-controller-outline', library: 'Ionicons', color: '#9c88ff' },
+    //{ id: 53, name: 'Cameras', icon: 'camera-outline', library: 'Ionicons', color: '#ff6b6b' },
+    //{ id: 54, name: 'Chargers & Cables', icon: 'power-outline', library: 'Ionicons', color: '#34495e' },
 
     // Sports & Fitness
-    { id: 55, name: 'Sports Equipment', icon: 'football-outline', library: 'Ionicons', color: '#f0932b' },
-    { id: 56, name: 'Fitness', icon: 'fitness', library: 'Ionicons', color: '#e74c3c' },
-    { id: 57, name: 'Outdoor Activities', icon: 'trail-sign-outline', library: 'Ionicons', color: '#27ae60' },
-    { id: 58, name: 'Cycling', icon: 'bicycle-outline', library: 'Ionicons', color: '#3498db' },
-    { id: 59, name: 'Water Sports', icon: 'boat-outline', library: 'Ionicons', color: '#74b9ff' },
+    //{ id: 55, name: 'Sports Equipment', icon: 'football-outline', library: 'Ionicons', color: '#f0932b' },
+    //{ id: 56, name: 'Fitness', icon: 'fitness', library: 'Ionicons', color: '#e74c3c' },
+    //{ id: 57, name: 'Outdoor Activities', icon: 'trail-sign-outline', library: 'Ionicons', color: '#27ae60' },
+    //{ id: 58, name: 'Cycling', icon: 'bicycle-outline', library: 'Ionicons', color: '#3498db' },
+    //{ id: 59, name: 'Water Sports', icon: 'boat-outline', library: 'Ionicons', color: '#74b9ff' },
 
     // Books, Media & Stationery  
     { id: 60, name: 'Books', icon: 'book-outline', library: 'Ionicons', color: '#00cec9' },
-    { id: 61, name: 'Articles', icon: 'newspaper-outline', library: 'Ionicons', color: '#fd79a8' },
-    { id: 62, name: 'Magazines', icon: 'library-outline', library: 'Ionicons', color: '#e17055' },
-    { id: 63, name: 'Stationery', icon: 'pencil-outline', library: 'Ionicons', color: '#fdcb6e' },
-    { id: 64, name: 'Art Supplies', icon: 'color-palette-outline', library: 'Ionicons', color: '#e17055' },
-    { id: 65, name: 'Office Supplies', icon: 'briefcase-outline', library: 'Ionicons', color: '#636e72' },
+    //{ id: 61, name: 'Articles', icon: 'newspaper-outline', library: 'Ionicons', color: '#fd79a8' },
+    //{ id: 62, name: 'Magazines', icon: 'library-outline', library: 'Ionicons', color: '#e17055' },
+    //{ id: 63, name: 'Stationery', icon: 'pencil-outline', library: 'Ionicons', color: '#fdcb6e' },
+//{ id: 64, name: 'Art Supplies', icon: 'color-palette-outline', library: 'Ionicons', color: '#e17055' },
+   // { id: 65, name: 'Office Supplies', icon: 'briefcase-outline', library: 'Ionicons', color: '#636e72' },
 
     // Toys & Games
     { id: 66, name: 'Toys', icon: 'cube-outline', library: 'Ionicons', color: '#eb4d4b' },
     { id: 67, name: 'Board Games', icon: 'grid-outline', library: 'Ionicons', color: '#9b59b6' },
     { id: 68, name: 'Educational Toys', icon: 'school-outline', library: 'Ionicons', color: '#3498db' },
-    { id: 69, name: 'Action Figures', icon: 'person-outline', library: 'Ionicons', color: '#e74c3c' },
-    { id: 70, name: 'Puzzles', icon: 'grid-outline', library: 'Ionicons', color: '#f39c12' },
+    //{ id: 69, name: 'Action Figures', icon: 'person-outline', library: 'Ionicons', color: '#e74c3c' },
+   // { id: 70, name: 'Puzzles', icon: 'grid-outline', library: 'Ionicons', color: '#f39c12' },
 
     // Baby & Kids
     { id: 71, name: 'Baby Care', icon: 'heart-outline', library: 'Ionicons', color: '#ff7675' },
     { id: 72, name: 'Baby Food', icon: 'nutrition', library: 'Ionicons', color: '#55a3ff' },
     { id: 73, name: 'Diapers', icon: 'medkit-outline', library: 'Ionicons', color: '#fd79a8' },
-    { id: 74, name: 'Baby Formula', icon: 'flask-outline', library: 'Ionicons', color: '#74b9ff' },
-    { id: 75, name: 'Kids Clothing', icon: 'shirt-outline', library: 'Ionicons', color: '#ff6348' },
+    //{ id: 74, name: 'Baby Formula', icon: 'flask-outline', library: 'Ionicons', color: '#74b9ff' },
+    //{ id: 75, name: 'Kids Clothing', icon: 'shirt-outline', library: 'Ionicons', color: '#ff6348' },
 
     // Pet Care
-    { id: 76, name: 'Pet Supplies', icon: 'paw-outline', library: 'Ionicons', color: '#55a3ff' },
-    { id: 77, name: 'Pet Food', icon: 'fast-food-outline', library: 'Ionicons', color: '#8e44ad' },
-    { id: 78, name: 'Pet Toys', icon: 'baseball-outline', library: 'Ionicons', color: '#f0932b' },
-    { id: 79, name: 'Pet Grooming', icon: 'cut-outline', library: 'Ionicons', color: '#00cec9' },
+   // { id: 76, name: 'Pet Supplies', icon: 'paw-outline', library: 'Ionicons', color: '#55a3ff' },
+   // { id: 77, name: 'Pet Food', icon: 'fast-food-outline', library: 'Ionicons', color: '#8e44ad' },
+   // { id: 78, name: 'Pet Toys', icon: 'baseball-outline', library: 'Ionicons', color: '#f0932b' },
+    //{ id: 79, name: 'Pet Grooming', icon: 'cut-outline', library: 'Ionicons', color: '#00cec9' },
 
     // Automotive
-    { id: 80, name: 'Car Accessories', icon: 'car-outline', library: 'Ionicons', color: '#2c3e50' },
-    { id: 81, name: 'Car Care', icon: 'build', library: 'Ionicons', color: '#3498db' },
-    { id: 82, name: 'Motor Oil', icon: 'water-outline', library: 'Ionicons', color: '#34495e' },
+   // { id: 80, name: 'Car Accessories', icon: 'car-outline', library: 'Ionicons', color: '#2c3e50' },
+   // { id: 81, name: 'Car Care', icon: 'build', library: 'Ionicons', color: '#3498db' },
+    //{ id: 82, name: 'Motor Oil', icon: 'water-outline', library: 'Ionicons', color: '#34495e' },
 
     // Pharmacy
-    { id: 83, name: 'Prescription', icon: 'medical', library: 'Ionicons', color: '#e74c3c' },
-    { id: 84, name: 'First Aid', icon: 'bandage-outline', library: 'Ionicons', color: '#27ae60' },
-    { id: 85, name: 'Medical Devices', icon: 'pulse-outline', library: 'Ionicons', color: '#e91e63' },
+   // { id: 83, name: 'Prescription', icon: 'medical', library: 'Ionicons', color: '#e74c3c' },
+   // { id: 84, name: 'First Aid', icon: 'bandage-outline', library: 'Ionicons', color: '#27ae60' },
+    //{ id: 85, name: 'Medical Devices', icon: 'pulse-outline', library: 'Ionicons', color: '#e91e63' },
 
     // Seasonal & Special
-    { id: 86, name: 'Holiday Items', icon: 'gift-outline', library: 'Ionicons', color: '#ff6348' },
-    { id: 87, name: 'Party Supplies', icon: 'balloon-outline', library: 'Ionicons', color: '#fd79a8' },
-    { id: 88, name: 'Gift Cards', icon: 'card-outline', library: 'Ionicons', color: '#f39c12' },
-    { id: 89, name: 'Travel Essentials', icon: 'airplane-outline', library: 'Ionicons', color: '#74b9ff' }
+   // { id: 86, name: 'Holiday Items', icon: 'gift-outline', library: 'Ionicons', color: '#ff6348' },
+   // { id: 87, name: 'Party Supplies', icon: 'balloon-outline', library: 'Ionicons', color: '#fd79a8' },
+    // id: 88, name: 'Gift Cards', icon: 'card-outline', library: 'Ionicons', color: '#f39c12' },
+    //{ id: 89, name: 'Travel Essentials', icon: 'airplane-outline', library: 'Ionicons', color: '#74b9ff' }
 ];
 
 export const sampleProducts = [

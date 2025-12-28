@@ -4,31 +4,44 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext, useState, useEffect } from "react";
 import { FlatList, TouchableOpacity, View, Text, Image, StyleSheet } from "react-native";
 import FilterSortComponent from "./FilterSortComponent";
+import { ThemedView } from "./ThemedView";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { addToCart as addToCartAction, incrementQuantity, decrementQuantity } from "@/redux/slices/cartSlice";
-import { FavoritesStorageService } from "@/utils/favoritesStorage";
+import { FavoritesStorageService, FavoriteProduct } from "@/utils/favoritesStorage";
 
 interface Favorites {
     [productId: string]: boolean;
 }
-export function ProductCart({ products = sampleProducts, title = "Popular Deals" }) {
+
+export function SavedItems({ products = sampleProducts, title = "Popular Deals" }) {
     const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
     const styles = getStyles(theme);
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
     const [favorites, setFavorites] = useState<Favorites>({});
-    const [filteredProducts, setFilteredProducts] = useState(products);
+    const [favoriteProducts, setFavoriteProducts] = useState<FavoriteProduct[]>([]);
 
     // Load favorites from storage on mount
     useEffect(() => {
         loadFavorites();
     }, []);
 
+    // Refresh favorites when component is focused
+    useEffect(() => {
+        const interval = setInterval(() => {
+            loadFavorites();
+        }, 2000); // Refresh every 2 seconds
+
+        return () => clearInterval(interval);
+    }, []);
+
     const loadFavorites = async () => {
         try {
-            const favoriteProducts = await FavoritesStorageService.getFavorites();
+            const favs = await FavoritesStorageService.getFavorites();
+            setFavoriteProducts(favs);
+            
             const favoritesMap: Favorites = {};
-            favoriteProducts.forEach(fav => {
+            favs.forEach(fav => {
                 favoritesMap[fav.id] = true;
             });
             setFavorites(favoritesMap);
@@ -43,26 +56,14 @@ export function ProductCart({ products = sampleProducts, title = "Popular Deals"
         return item ? item.quantity : 0;
     };
 
+
     const toggleFavorite = async (product: any) => {
         try {
-            const isNowFavorite = await FavoritesStorageService.toggleFavorite({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                rating: product.rating,
-                inStock: product.inStock,
-                category: product.category,
-                isOnSale: product.isOnSale,
-                saleLabel: product.saleLabel,
-            });
-            
-            setFavorites(prev => ({
-                ...prev,
-                [product.id]: isNowFavorite
-            }));
+            await FavoritesStorageService.removeFavorite(product.id);
+            // Reload favorites to update the list
+            await loadFavorites();
         } catch (error) {
-            console.error('Error toggling favorite:', error);
+            console.error('Error removing favorite:', error);
         }
     };
 
@@ -85,39 +86,6 @@ export function ProductCart({ products = sampleProducts, title = "Popular Deals"
         dispatch(decrementQuantity(productId));
     };
 
-    const handleFilterChange = (filters: any) => {
-        // Apply filters to your data
-        //console.log('Filters changed:', filters);
-        // Example: filterProducts(filters.sortBy, filters.shopId);
-        let filtered = products;
-
-        // Apply stock filter
-        /*  if (filters.sortBy !== 'all') {
-             filtered = filtered.filter(product => product.stock === filters.sortBy);
-         } */
-
-        // Apply shop filter
-        /*  if (filters.shopId !== 'all') {
-             filtered = filtered.filter(product => product.shopId === filters.shopId);
-         } */
-
-        // Apply price filter
-        if (filters.priceRange !== 'all') {
-            filtered = filtered.filter(product => {
-                const price = product.price;
-                switch (filters.priceRange) {
-                    case 'under_10': return price < 10;
-                    case '10_50': return price >= 10 && price <= 50;
-                    case '50_100': return price >= 50 && price <= 100;
-                    case '100_200': return price >= 100 && price <= 200;
-                    case 'over_200': return price > 200;
-                    default: return true;
-                }
-            });
-        }
-
-        setFilteredProducts(filtered);
-    };
     const renderStars = (rating: any) => {
         const stars = [];
         const fullStars = Math.floor(rating);
@@ -227,28 +195,26 @@ export function ProductCart({ products = sampleProducts, title = "Popular Deals"
 
 
     return (
-        <View style={styles.container}>
-            {/* Section Header */}
-            <View style={styles.sectionHeader}>
-                {/*   <Text style={styles.sectionTitle}>{title}</Text> */}
-                <FilterSortComponent onFilterChange={handleFilterChange} />
-                {/* <TouchableOpacity style={styles.seeAllButton}>
-                    <Ionicons name="chevron-forward" size={20} color={theme.text} />
-                </TouchableOpacity> */}
-            </View>
-
-            {/* Products Grid */}
-            <FlatList
-                data={products}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.productGrid}
-                columnWrapperStyle={styles.productRow}
-                renderItem={({ item }) => <ProductCard product={item} />}
-            />
-        </View>
+        <ThemedView style={styles.container}>
+            {favoriteProducts.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <Ionicons name="heart-outline" size={64} color="#ccc" />
+                    <Text style={styles.emptyText}>No favorites yet</Text>
+                    <Text style={styles.emptySubtext}>Tap the heart icon on products to add them here</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={favoriteProducts}
+                    keyExtractor={(item) => item.id.toString()}
+                    numColumns={2}
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.productGrid}
+                    columnWrapperStyle={styles.productRow}
+                    renderItem={({ item }) => <ProductCard product={item} />}
+                />
+            )}
+        </ThemedView>
     );
 };
 
@@ -258,8 +224,23 @@ function getStyles(theme: any) {
             padding: 5,
             backgroundColor: theme.background,
         },
-        sectionHeader: {
-            marginBottom: 20,
+        emptyContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 60,
+        },
+        emptyText: {
+            fontSize: 18,
+            fontWeight: '600',
+            color: theme.text,
+            marginTop: 16,
+        },
+        emptySubtext: {
+            fontSize: 14,
+            color: '#999',
+            marginTop: 8,
+            textAlign: 'center',
         },
         sectionTitle: {
             fontSize: 18,
@@ -277,7 +258,7 @@ function getStyles(theme: any) {
             marginBottom: 20,
         },
         productCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.background,
             borderRadius: 12,
             padding: 10,
             width: '48%',

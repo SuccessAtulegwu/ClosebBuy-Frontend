@@ -5,14 +5,15 @@
 
 const tintColorLight = '#10B981';
 const tintColorDark = '#34D399';
-
+//light theme ==> #2563EB
+//dark theme ==> #3B82F6
 export const Colors = {
   light: {
     text: '#11181C',
     background: '#FFFFFF',
     tint: tintColorLight,
     icon: '#687076',
-    primary: '#2563EB',
+    primary: '#8BC34A',
     background_input: '#F9F9F9',
     secondary: '#10B981',
     cardcolor: '#F9FAFB',
@@ -28,7 +29,7 @@ export const Colors = {
     background: '#111827',
     tint: tintColorDark,
     icon: '#9BA1A6',
-    primary: '#3B82F6',
+    primary: '#8BC34A',
     cardcolor: '#1F2937',
     secondary: '#8BC34A',
     accent: '#F59E0B',
