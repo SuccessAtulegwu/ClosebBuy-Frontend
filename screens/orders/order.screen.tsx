@@ -5,6 +5,8 @@ import { Stack } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { HomeHeader } from '@/components/HomeHeader';
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Order as OrderType, OrderItem } from '@/types/publicTypes';
+import { OrderStatus } from '@/types/publicenums';
 
 const { width } = Dimensions.get('window');
 

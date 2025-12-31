@@ -1,20 +1,17 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CartItem } from './cartSlice';
+import { Order, DeliveryDetail, User } from '@/types/publicTypes';
+import { OrderStatus, PaymentStatus, PaymentMethod as PaymentMethodEnum } from '@/types/publicenums';
+import { CreateOrderDto, CreateDeliveryDetailDto, OrderItemDto } from '@/types/publicDTOTypes';
+import { OrderService } from '@/apiServices/orderService';
 
-export interface ShippingAddress {
-  fullName: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
+export interface ShippingAddress extends Omit<DeliveryDetail, 'id' | 'userId' | 'user' | 'orders'> {
   isDefault?: boolean;
 }
 
-export interface PaymentMethod {
+export interface PaymentMethodDetails {
   id: string;
-  type: 'card' | 'cash' | 'bank_transfer' | 'wallet';
+  type: PaymentMethodEnum;
   cardNumber?: string;
   cardHolderName?: string;
   expiryDate?: string;
@@ -22,28 +19,19 @@ export interface PaymentMethod {
   isDefault?: boolean;
 }
 
-export interface Order {
-  id: string;
-  orderNumber: string;
-  items: CartItem[];
-  shippingAddress: ShippingAddress;
-  paymentMethod: PaymentMethod;
-  subtotal: number;
-  deliveryFee: number;
-  tax: number;
-  total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: string;
-  estimatedDelivery?: string;
+export interface OrderListItem extends Omit<Order, 'customer' | 'rider' | 'delivery' | 'items' | 'payment'> {
+  customerId: number;
+  customerName?: string;
+  itemCount?: number;
 }
 
 interface OrderState {
-  currentOrder: Partial<Order> | null;
-  orders: Order[];
+  currentOrder: Partial<OrderListItem> | null;
+  orders: OrderListItem[];
   shippingAddress: ShippingAddress | null;
-  paymentMethod: PaymentMethod | null;
+  paymentMethod: PaymentMethodDetails | null;
   savedAddresses: ShippingAddress[];
-  savedPaymentMethods: PaymentMethod[];
+  savedPaymentMethods: PaymentMethodDetails[];
   deliveryFee: number;
   tax: number;
   loading: boolean;
@@ -63,44 +51,64 @@ const initialState: OrderState = {
   error: null,
 };
 
-// Async thunks for API calls (ready for backend integration)
-export const placeOrder = createAsyncThunk(
-  'order/placeOrder',
-  async (orderData: Partial<Order>, { rejectWithValue }) => {
+// Async thunk for fetching orders from backend
+export const fetchOrders = createAsyncThunk(
+  'order/fetchOrders',
+  async (params: { status?: OrderStatus; page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await orderService.createOrder(orderData);
-      // return response.data;
+      const response = await OrderService.getOrders(params);
       
-      // Mock response for now
-      const mockOrder: Order = {
-        ...orderData,
-        id: Date.now().toString(),
-        orderNumber: `ORD-${Date.now()}`,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days
-      } as Order;
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to fetch orders');
+      }
       
-      return mockOrder;
+      // Transform orders to OrderListItem format
+      const orderListItems: OrderListItem[] = response.data.map((order) => ({
+        ...order,
+        customerId: order.customerId,
+        customerName: order.customer?.name,
+        itemCount: order.items?.length || 0,
+      }));
+      
+      return orderListItems;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to place order');
+      return rejectWithValue(error.message || 'Failed to fetch orders');
     }
   }
 );
 
-export const fetchOrders = createAsyncThunk(
-  'order/fetchOrders',
-  async (_, { rejectWithValue }) => {
+// Async thunk for fetching single order
+export const fetchOrderById = createAsyncThunk(
+  'order/fetchOrderById',
+  async (orderId: string, { rejectWithValue }) => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await orderService.getOrders();
-      // return response.data;
+      const response = await OrderService.getOrderById(orderId);
       
-      // Mock response for now
-      return [];
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to fetch order');
+      }
+      
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch orders');
+      return rejectWithValue(error.message || 'Failed to fetch order');
+    }
+  }
+);
+
+// Async thunk for cancelling order
+export const cancelOrder = createAsyncThunk(
+  'order/cancelOrder',
+  async ({ orderId, reason }: { orderId: string; reason?: string }, { rejectWithValue }) => {
+    try {
+      const response = await OrderService.cancelOrder(orderId, reason);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to cancel order');
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to cancel order');
     }
   }
 );
@@ -113,7 +121,7 @@ const orderSlice = createSlice({
       state.shippingAddress = action.payload;
     },
     
-    setPaymentMethod: (state, action: PayloadAction<PaymentMethod>) => {
+    setPaymentMethod: (state, action: PayloadAction<PaymentMethodDetails>) => {
       state.paymentMethod = action.payload;
     },
     
@@ -135,7 +143,7 @@ const orderSlice = createSlice({
       );
     },
     
-    addSavedPaymentMethod: (state, action: PayloadAction<PaymentMethod>) => {
+    addSavedPaymentMethod: (state, action: PayloadAction<PaymentMethodDetails>) => {
       const existingIndex = state.savedPaymentMethods.findIndex(
         pm => pm.id === action.payload.id
       );
@@ -175,21 +183,6 @@ const orderSlice = createSlice({
   
   extraReducers: (builder) => {
     builder
-      // Place Order
-      .addCase(placeOrder.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(placeOrder.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentOrder = action.payload;
-        state.orders.unshift(action.payload);
-      })
-      .addCase(placeOrder.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      
       // Fetch Orders
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
@@ -200,6 +193,41 @@ const orderSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+      // Fetch Order By ID
+      .addCase(fetchOrderById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrderById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentOrder = action.payload;
+      })
+      .addCase(fetchOrderById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+      // Cancel Order
+      .addCase(cancelOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update order in list
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index >= 0) {
+          state.orders[index] = {
+            ...state.orders[index],
+            status: action.payload.status,
+          };
+        }
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

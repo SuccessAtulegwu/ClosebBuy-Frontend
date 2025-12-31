@@ -8,14 +8,19 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Paystack } from 'react-native-paystack-webview';
 import { ThemeContext } from '@/context/ThemeContext';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { placeOrder, calculateTax } from '@/redux/slices/orderSlice';
-import { clearCart } from '@/redux/slices/cartSlice';
+import { calculateTax } from '@/redux/slices/orderSlice';
 import { fontFamilies } from '@/constants/app.constants';
+import { usePaymentFlow } from '@/hooks/usePaymentFlow';
+import { PaymentMethod as PaymentMethodEnum } from '@/types/publicenums';
+
+const PAYSTACK_PUBLIC_KEY = process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_XXXXX';
 
 export default function ReviewOrderScreen() {
   const { theme } = useContext(ThemeContext);
@@ -24,11 +29,26 @@ export default function ReviewOrderScreen() {
   const dispatch = useAppDispatch();
   
   const { items, totalAmount } = useAppSelector((state) => state.cart);
-  const { shippingAddress, paymentMethod, deliveryFee, tax, loading } = useAppSelector(
+  const { shippingAddress, paymentMethod, deliveryFee, tax } = useAppSelector(
     (state) => state.order
   );
+  const { user } = useAppSelector((state) => state.auth);
   
-  const [isProcessing, setIsProcessing] = useState(false);
+  const {
+    processCheckout,
+    verifyPayment,
+    handlePaymentCancel,
+    isProcessing,
+    currentStep,
+  } = usePaymentFlow();
+
+  const [showPaystack, setShowPaystack] = useState(false);
+  const [paymentData, setPaymentData] = useState<{
+    reference: string;
+    orderId: number;
+    orderNumber: string;
+    amount: number;
+  } | null>(null);
 
   // Calculate tax based on subtotal
   React.useEffect(() => {
@@ -38,51 +58,75 @@ export default function ReviewOrderScreen() {
   const subtotal = totalAmount;
   const total = subtotal + deliveryFee + tax;
 
+  /**
+   * Handle Place Order - Creates order and initializes payment
+   */
   const handlePlaceOrder = async () => {
     if (!shippingAddress || !paymentMethod) {
       Alert.alert('Error', 'Missing shipping or payment information');
       return;
     }
 
-    setIsProcessing(true);
-
-    const orderData = {
-      items,
-      shippingAddress,
-      paymentMethod,
-      subtotal,
-      deliveryFee,
-      tax,
-      total,
-    };
-
-    try {
-      const result = await dispatch(placeOrder(orderData)).unwrap();
-      
-      // Clear cart after successful order
-      dispatch(clearCart());
-      
-      // Navigate to success screen
-      router.replace({
-        pathname: '/(routes)/cart/success',
-        params: { orderId: result.id, orderNumber: result.orderNumber },
-      });
-    } catch (error: any) {
-      Alert.alert('Order Failed', error || 'Failed to place order. Please try again.');
-    } finally {
-      setIsProcessing(false);
+    if (!user || !user.email) {
+      Alert.alert('Error', 'User information is required for payment');
+      return;
     }
+
+    // Process checkout (create order + initialize payment)
+    const result = await processCheckout();
+
+    if (!result.success) {
+      Alert.alert('Checkout Failed', result.error || 'Failed to process checkout');
+      return;
+    }
+
+    // Payment initialized - open Paystack WebView
+    if (result.reference && result.orderId && result.orderNumber) {
+      setPaymentData({
+        reference: result.reference,
+        orderId: result.orderId,
+        orderNumber: result.orderNumber,
+        amount: total,
+      });
+      setShowPaystack(true);
+    }
+  };
+
+  /**
+   * Handle Paystack Success
+   */
+  const handlePaystackSuccess = async (response: any) => {
+    console.log('Paystack Success:', response);
+    setShowPaystack(false);
+
+    if (paymentData) {
+      // Verify payment on backend
+      await verifyPayment(
+        response.reference || paymentData.reference,
+        paymentData.orderId,
+        paymentData.orderNumber
+      );
+    }
+  };
+
+  /**
+   * Handle Paystack Cancel/Close
+   */
+  const handlePaystackCancel = () => {
+    console.log('Payment cancelled');
+    setShowPaystack(false);
+    handlePaymentCancel(paymentData?.orderId);
   };
 
   const getPaymentMethodLabel = () => {
     switch (paymentMethod?.type) {
-      case 'card':
+      case PaymentMethodEnum.CARD:
         return `Card ending in ${paymentMethod.cardNumber?.slice(-4)}`;
-      case 'cash':
+      case PaymentMethodEnum.CASH:
         return 'Cash on Delivery';
-      case 'bank_transfer':
+      case PaymentMethodEnum.TRANSFER:
         return 'Bank Transfer';
-      case 'wallet':
+      case PaymentMethodEnum.WALLET:
         return 'Digital Wallet';
       default:
         return 'Unknown';
@@ -125,16 +169,16 @@ export default function ReviewOrderScreen() {
               <Ionicons name="location" size={24} color={theme.accent} />
             </View>
             <View style={styles.infoContent}>
-              <Text style={styles.infoName}>{shippingAddress?.fullName}</Text>
+              <Text style={styles.infoName}>{shippingAddress?.name}</Text>
               <Text style={styles.infoText}>{shippingAddress?.phoneNumber}</Text>
               <Text style={styles.infoText}>
                 {shippingAddress?.address}, {shippingAddress?.city}
               </Text>
               <Text style={styles.infoText}>
-                {shippingAddress?.state}, {shippingAddress?.country}
+                {shippingAddress?.state}
               </Text>
-              {shippingAddress?.zipCode && (
-                <Text style={styles.infoText}>{shippingAddress.zipCode}</Text>
+              {shippingAddress?.postalCode && (
+                <Text style={styles.infoText}>{shippingAddress.postalCode}</Text>
               )}
             </View>
           </View>
@@ -153,11 +197,11 @@ export default function ReviewOrderScreen() {
             <View style={styles.iconContainer}>
               <Ionicons
                 name={
-                  paymentMethod?.type === 'card'
+                  paymentMethod?.type === PaymentMethodEnum.CARD
                     ? 'card'
-                    : paymentMethod?.type === 'cash'
+                    : paymentMethod?.type === PaymentMethodEnum.CASH
                     ? 'cash'
-                    : paymentMethod?.type === 'wallet'
+                    : paymentMethod?.type === PaymentMethodEnum.WALLET
                     ? 'wallet'
                     : 'business'
                 }
@@ -167,7 +211,7 @@ export default function ReviewOrderScreen() {
             </View>
             <View style={styles.infoContent}>
               <Text style={styles.infoName}>{getPaymentMethodLabel()}</Text>
-              {paymentMethod?.type === 'card' && (
+              {paymentMethod?.type === PaymentMethodEnum.CARD && (
                 <Text style={styles.infoText}>{paymentMethod.cardHolderName}</Text>
               )}
             </View>
@@ -194,7 +238,7 @@ export default function ReviewOrderScreen() {
               <Text style={styles.summaryValue}>₦{tax.toFixed(2)}</Text>
             </View>
             
-            {paymentMethod?.type === 'cash' && (
+            {paymentMethod?.type === PaymentMethodEnum.CASH && (
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Service Fee (COD)</Text>
                 <Text style={styles.summaryValue}>₦100</Text>
@@ -206,7 +250,7 @@ export default function ReviewOrderScreen() {
             <View style={[styles.summaryRow, styles.totalRow]}>
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalValue}>
-                ₦{(total + (paymentMethod?.type === 'cash' ? 100 : 0)).toLocaleString()}
+                ₦{(total + (paymentMethod?.type === PaymentMethodEnum.CASH ? 100 : 0)).toLocaleString()}
               </Text>
             </View>
           </View>
@@ -228,7 +272,7 @@ export default function ReviewOrderScreen() {
         <View style={styles.bottomLeft}>
           <Text style={styles.bottomLabel}>Total Amount</Text>
           <Text style={styles.bottomTotal}>
-            ₦{(total + (paymentMethod?.type === 'cash' ? 100 : 0)).toLocaleString()}
+            ₦{(total + (paymentMethod?.type === PaymentMethodEnum.CASH ? 100 : 0)).toLocaleString()}
           </Text>
         </View>
         
@@ -238,7 +282,12 @@ export default function ReviewOrderScreen() {
           disabled={isProcessing}
         >
           {isProcessing ? (
-            <ActivityIndicator color="#fff" />
+            <View style={styles.processingContainer}>
+              <ActivityIndicator color="#fff" size="small" />
+              {currentStep && (
+                <Text style={styles.processingText}>{currentStep}</Text>
+              )}
+            </View>
           ) : (
             <>
               <Text style={styles.placeOrderText}>Place Order</Text>
@@ -247,6 +296,24 @@ export default function ReviewOrderScreen() {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* Paystack Payment Modal */}
+      {showPaystack && paymentData && user && (
+        <Modal visible={showPaystack} animationType="slide">
+          <Paystack
+            paystackKey={PAYSTACK_PUBLIC_KEY}
+            billingEmail={user.email}
+            billingName={shippingAddress?.name || user.name}
+            phone={shippingAddress?.phoneNumber || ''}
+            amount={paymentData.amount * 100} // Paystack expects amount in kobo
+            channels={['card', 'bank', 'ussd', 'mobile_money']}
+            onCancel={handlePaystackCancel}
+            onSuccess={handlePaystackSuccess}
+            refNumber={paymentData.reference}
+            activityIndicatorColor={theme.accent}
+          />
+        </Modal>
+      )}
     </View>
   );
 }
@@ -462,6 +529,16 @@ function getStyles(theme: any) {
       fontSize: 16,
       fontWeight: '600',
       fontFamily: fontFamilies.NunitoSemiBold,
+    },
+    processingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    processingText: {
+      color: '#fff',
+      fontSize: 14,
+      fontFamily: fontFamilies.NunitoRegular,
     },
   });
 }

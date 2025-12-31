@@ -85,3 +85,13 @@ export enum WithdrawalStatus {
     REJECTED = 'REJECTED',
     PAID = 'PAID'
 }
+
+export enum Role {
+    VENDOR = 'VENDOR',
+    ADMIN = 'ADMIN',
+    RESIDENT = 'RESIDENT',
+    ESTATEMANAGER = 'ESTATEMANAGER',
+    SALES = 'SALES',
+    DELIVERY_AGENT = 'DELIVERY_AGENT',
+    CUSTOMER = 'CUSTOMER'
+}

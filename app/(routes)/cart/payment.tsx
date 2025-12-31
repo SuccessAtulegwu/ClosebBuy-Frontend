@@ -16,8 +16,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setPaymentMethod } from '@/redux/slices/orderSlice';
 import { fontFamilies } from '@/constants/app.constants';
 import LocalStorageService, { SavedPaymentMethod } from '@/utils/localStorage';
-
-type PaymentType = 'card' | 'cash' | 'bank_transfer' | 'wallet';
+import { PaymentMethod as PaymentMethodEnum } from '@/types/publicenums';
 
 export default function PaymentScreen() {
   const { theme } = useContext(ThemeContext);
@@ -27,8 +26,8 @@ export default function PaymentScreen() {
   
   const { paymentMethod } = useAppSelector((state) => state.order);
   
-  const [selectedType, setSelectedType] = useState<PaymentType>(
-    paymentMethod?.type || 'card'
+  const [selectedType, setSelectedType] = useState<PaymentMethodEnum>(
+    paymentMethod?.type || PaymentMethodEnum.CARD
   );
   
   const [cardDetails, setCardDetails] = useState({
@@ -62,14 +61,14 @@ export default function PaymentScreen() {
 
   const paymentOptions = [
     {
-      type: 'card' as PaymentType,
+      type: PaymentMethodEnum.CARD,
       icon: 'card-outline',
       label: 'Debit/Credit Card',
       description: 'Pay securely with Paystack',
       enabled: true,
     },
     {
-      type: 'cash' as PaymentType,
+      type: PaymentMethodEnum.CASH,
       icon: 'cash-outline',
       label: 'Cash on Delivery',
       description: 'Coming soon - Pay when you receive',
@@ -96,7 +95,7 @@ export default function PaymentScreen() {
   };
 
   const validateCardPayment = () => {
-    if (selectedType !== 'card') return true;
+    if (selectedType !== PaymentMethodEnum.CARD) return true;
 
     if (!cardDetails.cardNumber.replace(/\s/g, '').match(/^\d{16}$/)) {
       Alert.alert('Error', 'Please enter a valid 16-digit card number');
@@ -126,7 +125,7 @@ export default function PaymentScreen() {
       const payment = {
         id: Date.now().toString(),
         type: selectedType,
-        ...(selectedType === 'card' && cardDetails),
+        ...(selectedType === PaymentMethodEnum.CARD && cardDetails),
         isDefault: saveCard,
       };
 
@@ -134,12 +133,12 @@ export default function PaymentScreen() {
       dispatch(setPaymentMethod(payment));
       
       // Save to local device storage if user checked the option
-      if (saveCard && selectedType === 'card') {
+      if (saveCard && selectedType === PaymentMethodEnum.CARD) {
         // Only save last 4 digits of card number
         const last4Digits = cardDetails.cardNumber.replace(/\s/g, '').slice(-4);
         
         await LocalStorageService.savePaymentMethod({
-          type: 'card',
+          type: PaymentMethodEnum.CARD,
           cardNumber: last4Digits, // Save only last 4 digits
           cardHolderName: cardDetails.cardHolderName,
           expiryDate: cardDetails.expiryDate,
@@ -258,7 +257,7 @@ export default function PaymentScreen() {
         </View>
 
         {/* Card Details Form (shown only when card is selected) */}
-        {selectedType === 'card' && (
+        {selectedType === PaymentMethodEnum.CARD && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Card Details</Text>
 
@@ -372,7 +371,7 @@ export default function PaymentScreen() {
         )}
 
         {/* Paystack Info */}
-        {selectedType === 'card' && (
+        {selectedType === PaymentMethodEnum.CARD && (
           <View style={styles.infoBox}>
             <Ionicons name="shield-checkmark" size={24} color="#5cb85c" />
             <Text style={styles.infoText}>

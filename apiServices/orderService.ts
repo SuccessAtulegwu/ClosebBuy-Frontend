@@ -1,7 +1,11 @@
 // Backend API Service for Orders
 // This service provides endpoints ready for backend integration
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.closebuy.com/v1';
+import { Order, DeliveryDetail, Product, Payment } from '@/types/publicTypes';
+import { CreateOrderDto, CreateDeliveryDetailDto } from '@/types/publicDTOTypes';
+import { OrderStatus } from '@/types/publicenums';
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.3:4000/api';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -52,8 +56,8 @@ export const OrderService = {
    * Create a new order
    * POST /orders
    */
-  createOrder: async (orderData: any) => {
-    return apiCall('/orders', {
+  createOrder: async (orderData: CreateOrderDto): Promise<ApiResponse<Order>> => {
+    return apiCall<Order>('/orders', {
       method: 'POST',
       body: JSON.stringify(orderData),
     });
@@ -63,9 +67,9 @@ export const OrderService = {
    * Get all orders for current user
    * GET /orders
    */
-  getOrders: async (params?: { status?: string; page?: number; limit?: number }) => {
+  getOrders: async (params?: { status?: OrderStatus; page?: number; limit?: number }): Promise<ApiResponse<Order[]>> => {
     const queryParams = new URLSearchParams(params as any).toString();
-    return apiCall(`/orders?${queryParams}`, {
+    return apiCall<Order[]>(`/orders?${queryParams}`, {
       method: 'GET',
     });
   },
@@ -74,8 +78,8 @@ export const OrderService = {
    * Get single order by ID
    * GET /orders/:id
    */
-  getOrderById: async (orderId: string) => {
-    return apiCall(`/orders/${orderId}`, {
+  getOrderById: async (orderId: string): Promise<ApiResponse<Order>> => {
+    return apiCall<Order>(`/orders/${orderId}`, {
       method: 'GET',
     });
   },
@@ -84,8 +88,8 @@ export const OrderService = {
    * Update order status
    * PATCH /orders/:id/status
    */
-  updateOrderStatus: async (orderId: string, status: string) => {
-    return apiCall(`/orders/${orderId}/status`, {
+  updateOrderStatus: async (orderId: string, status: OrderStatus): Promise<ApiResponse<Order>> => {
+    return apiCall<Order>(`/orders/${orderId}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
@@ -95,8 +99,8 @@ export const OrderService = {
    * Cancel order
    * POST /orders/:id/cancel
    */
-  cancelOrder: async (orderId: string, reason?: string) => {
-    return apiCall(`/orders/${orderId}/cancel`, {
+  cancelOrder: async (orderId: string, reason?: string): Promise<ApiResponse<Order>> => {
+    return apiCall<Order>(`/orders/${orderId}/cancel`, {
       method: 'POST',
       body: JSON.stringify({ reason }),
     });
@@ -106,8 +110,8 @@ export const OrderService = {
    * Track order
    * GET /orders/:id/track
    */
-  trackOrder: async (orderId: string) => {
-    return apiCall(`/orders/${orderId}/track`, {
+  trackOrder: async (orderId: string): Promise<ApiResponse<Order>> => {
+    return apiCall<Order>(`/orders/${orderId}/track`, {
       method: 'GET',
     });
   },
@@ -116,8 +120,8 @@ export const OrderService = {
    * Get order invoice
    * GET /orders/:id/invoice
    */
-  getOrderInvoice: async (orderId: string) => {
-    return apiCall(`/orders/${orderId}/invoice`, {
+  getOrderInvoice: async (orderId: string): Promise<ApiResponse<any>> => {
+    return apiCall<any>(`/orders/${orderId}/invoice`, {
       method: 'GET',
     });
   },
@@ -182,8 +186,8 @@ export const AddressService = {
    * Get saved addresses
    * GET /addresses
    */
-  getAddresses: async () => {
-    return apiCall('/addresses', {
+  getAddresses: async (): Promise<ApiResponse<DeliveryDetail[]>> => {
+    return apiCall<DeliveryDetail[]>('/addresses', {
       method: 'GET',
     });
   },
@@ -192,8 +196,8 @@ export const AddressService = {
    * Add new address
    * POST /addresses
    */
-  addAddress: async (addressData: any) => {
-    return apiCall('/addresses', {
+  addAddress: async (addressData: CreateDeliveryDetailDto): Promise<ApiResponse<DeliveryDetail>> => {
+    return apiCall<DeliveryDetail>('/addresses', {
       method: 'POST',
       body: JSON.stringify(addressData),
     });
@@ -203,8 +207,8 @@ export const AddressService = {
    * Update address
    * PUT /addresses/:id
    */
-  updateAddress: async (addressId: string, addressData: any) => {
-    return apiCall(`/addresses/${addressId}`, {
+  updateAddress: async (addressId: string, addressData: Partial<CreateDeliveryDetailDto>): Promise<ApiResponse<DeliveryDetail>> => {
+    return apiCall<DeliveryDetail>(`/addresses/${addressId}`, {
       method: 'PUT',
       body: JSON.stringify(addressData),
     });
@@ -214,8 +218,8 @@ export const AddressService = {
    * Delete address
    * DELETE /addresses/:id
    */
-  deleteAddress: async (addressId: string) => {
-    return apiCall(`/addresses/${addressId}`, {
+  deleteAddress: async (addressId: string): Promise<ApiResponse<void>> => {
+    return apiCall<void>(`/addresses/${addressId}`, {
       method: 'DELETE',
     });
   },
@@ -224,8 +228,8 @@ export const AddressService = {
    * Set default address
    * PATCH /addresses/:id/default
    */
-  setDefaultAddress: async (addressId: string) => {
-    return apiCall(`/addresses/${addressId}/default`, {
+  setDefaultAddress: async (addressId: string): Promise<ApiResponse<DeliveryDetail>> => {
+    return apiCall<DeliveryDetail>(`/addresses/${addressId}/default`, {
       method: 'PATCH',
     });
   },
@@ -296,9 +300,9 @@ export const ProductService = {
     search?: string;
     page?: number;
     limit?: number;
-  }) => {
+  }): Promise<ApiResponse<Product[]>> => {
     const queryParams = new URLSearchParams(params as any).toString();
-    return apiCall(`/products?${queryParams}`, {
+    return apiCall<Product[]>(`/products?${queryParams}`, {
       method: 'GET',
     });
   },
@@ -307,8 +311,8 @@ export const ProductService = {
    * Get product by ID
    * GET /products/:id
    */
-  getProductById: async (productId: string) => {
-    return apiCall(`/products/${productId}`, {
+  getProductById: async (productId: string): Promise<ApiResponse<Product>> => {
+    return apiCall<Product>(`/products/${productId}`, {
       method: 'GET',
     });
   },
@@ -317,8 +321,8 @@ export const ProductService = {
    * Check product availability
    * GET /products/:id/availability
    */
-  checkAvailability: async (productId: string, quantity: number) => {
-    return apiCall(`/products/${productId}/availability?quantity=${quantity}`, {
+  checkAvailability: async (productId: string, quantity: number): Promise<ApiResponse<{ available: boolean; stock: number }>> => {
+    return apiCall<{ available: boolean; stock: number }>(`/products/${productId}/availability?quantity=${quantity}`, {
       method: 'GET',
     });
   },

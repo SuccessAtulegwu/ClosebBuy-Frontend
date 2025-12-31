@@ -2,6 +2,8 @@
 // Saves data locally on the device using AsyncStorage
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DeliveryDetail } from '@/types/publicTypes';
+import { PaymentMethod as PaymentMethodEnum } from '@/types/publicenums';
 
 const STORAGE_KEYS = {
   SAVED_ADDRESSES: '@closebuy_saved_addresses',
@@ -10,22 +12,15 @@ const STORAGE_KEYS = {
   DEFAULT_PAYMENT: '@closebuy_default_payment',
 };
 
-export interface SavedAddress {
+export interface SavedAddress extends Omit<DeliveryDetail, 'id' | 'userId' | 'user' | 'orders'> {
   id: string;
-  fullName: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
   isDefault?: boolean;
   createdAt: string;
 }
 
 export interface SavedPaymentMethod {
   id: string;
-  type: 'card' | 'cash';
+  type: PaymentMethodEnum;
   cardNumber?: string; // Last 4 digits only
   cardHolderName?: string;
   expiryDate?: string;

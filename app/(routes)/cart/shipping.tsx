@@ -27,13 +27,13 @@ export default function ShippingScreen() {
   const { shippingAddress } = useAppSelector((state) => state.order);
   
   const [formData, setFormData] = useState({
-    fullName: shippingAddress?.fullName || '',
+    name: shippingAddress?.name || '',
     phoneNumber: shippingAddress?.phoneNumber || '',
     address: shippingAddress?.address || '',
     city: shippingAddress?.city || 'Orozo',
     state: shippingAddress?.state || 'Abuja',
-    zipCode: shippingAddress?.zipCode || '900109',
-    country: shippingAddress?.country || 'Nigeria',
+    postalCode: shippingAddress?.postalCode || '900109',
+    landmark: shippingAddress?.landmark || '',
     isDefault: false,
   });
   
@@ -64,7 +64,7 @@ export default function ShippingScreen() {
   };
 
   const validateForm = () => {
-    if (!formData.fullName.trim()) {
+    if (!formData.name.trim()) {
       Alert.alert('Error', 'Please enter your full name');
       return false;
     }
@@ -99,13 +99,13 @@ export default function ShippingScreen() {
       // Save to local device storage if user checked the option
       if (formData.isDefault) {
         await LocalStorageService.saveAddress({
-          fullName: formData.fullName,
+          name: formData.name,
           phoneNumber: formData.phoneNumber,
           address: formData.address,
           city: formData.city,
           state: formData.state,
-          zipCode: formData.zipCode,
-          country: formData.country,
+          postalCode: formData.postalCode,
+          landmark: formData.landmark,
           isDefault: true,
         });
         
@@ -127,13 +127,13 @@ export default function ShippingScreen() {
 
   const handleSelectSavedAddress = (address: SavedAddress) => {
     setFormData({
-      fullName: address.fullName,
+      name: address.name,
       phoneNumber: address.phoneNumber,
       address: address.address,
       city: address.city,
       state: address.state,
-      zipCode: address.zipCode,
-      country: address.country,
+      postalCode: address.postalCode,
+      landmark: address.landmark || '',
       isDefault: false, // Don't auto-check save option
     });
     setShowSavedAddresses(false);
@@ -203,7 +203,7 @@ export default function ShippingScreen() {
                        <Ionicons name="location" size={20} color={theme.accent} />
                      </View>
                      <View style={styles.addressInfo}>
-                       <Text style={styles.addressName}>{address.fullName}</Text>
+                       <Text style={styles.addressName}>{address.name}</Text>
                        <Text style={styles.addressText} numberOfLines={2}>
                          {address.address}, {address.city}, {address.state}
                        </Text>
@@ -235,8 +235,8 @@ export default function ShippingScreen() {
               style={styles.input}
               placeholder="Enter your full name"
               placeholderTextColor={theme.tabIconDefault}
-              value={formData.fullName}
-              onChangeText={(text) => handleInputChange('fullName', text)}
+              value={formData.name}
+              onChangeText={(text) => handleInputChange('name', text)}
             />
           </View>
 
@@ -293,27 +293,26 @@ export default function ShippingScreen() {
 
           <View style={styles.row}>
             <View style={[styles.inputContainer, styles.halfWidth]}>
-              <Text style={styles.label}>ZIP Code</Text>
+              <Text style={styles.label}>Postal Code</Text>
               <TextInput
                 style={styles.input}
                 placeholder="100001"
                 placeholderTextColor={theme.tabIconDefault}
-                value={formData.zipCode}
-                onChangeText={(text) => handleInputChange('zipCode', text)}
+                value={formData.postalCode}
+                onChangeText={(text) => handleInputChange('postalCode', text)}
                 keyboardType="numeric"
                 editable={false}
               />
             </View>
 
             <View style={[styles.inputContainer, styles.halfWidth]}>
-              <Text style={styles.label}>Country</Text>
+              <Text style={styles.label}>Landmark (Optional)</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Nigeria"
+                placeholder="e.g., Near market"
                 placeholderTextColor={theme.tabIconDefault}
-                value={formData.country}
-                onChangeText={(text) => handleInputChange('country', text)}
-                editable={false}
+                value={formData.landmark}
+                onChangeText={(text) => handleInputChange('landmark', text)}
               />
             </View>
           </View>

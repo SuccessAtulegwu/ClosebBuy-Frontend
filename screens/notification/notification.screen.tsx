@@ -6,16 +6,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Notification as NotificationBase } from '@/types/publicTypes';
 import { NotificationType } from '@/types/publicenums';
 
-// Notification interface
-interface Notification {
-    id: string;
-    type: NotificationType;
-    title: string;
-    message: string;
+// Extend the base Notification type with UI-specific fields
+interface UINotification extends Omit<NotificationBase, 'user' | 'userId' | 'createdAt'> {
     timestamp: Date;
-    isRead: boolean;
     actionData?: any;
 }
 
@@ -36,7 +32,7 @@ export function NotificationScreen() {
     const router = useRouter();
     
     const [selectedFilter, setSelectedFilter] = useState('ALL');
-    const [notifications, setNotifications] = useState<Notification[]>(generateMockNotifications());
+    const [notifications, setNotifications] = useState<UINotification[]>(generateMockNotifications());
 
     // Calculate unread count
     const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -50,7 +46,7 @@ export function NotificationScreen() {
     const groupedNotifications = groupNotificationsByDate(filteredNotifications);
 
     // Mark notification as read
-    const markAsRead = (id: string) => {
+    const markAsRead = (id: number) => {
         setNotifications(prev => prev.map(n => 
             n.id === id ? { ...n, isRead: true } : n
         ));
@@ -62,7 +58,7 @@ export function NotificationScreen() {
     };
 
     // Delete notification
-    const deleteNotification = (id: string) => {
+    const deleteNotification = (id: number) => {
         Alert.alert(
             'Delete Notification',
             'Are you sure you want to delete this notification?',
@@ -98,7 +94,7 @@ export function NotificationScreen() {
     };
 
     // Handle notification press
-    const handleNotificationPress = (notification: Notification) => {
+    const handleNotificationPress = (notification: UINotification) => {
         markAsRead(notification.id);
         
         // Navigate based on notification type
@@ -143,7 +139,7 @@ export function NotificationScreen() {
     };
 
     // Render single notification
-    const renderNotification = (notification: Notification) => {
+    const renderNotification = (notification: UINotification) => {
         const iconData = getNotificationIcon(notification.type);
         
         return (
@@ -322,8 +318,8 @@ function formatTimestamp(date: Date): string {
 }
 
 // Helper function to group notifications by date
-function groupNotificationsByDate(notifications: Notification[]): Record<string, Notification[]> {
-    const groups: Record<string, Notification[]> = {
+function groupNotificationsByDate(notifications: UINotification[]): Record<string, UINotification[]> {
+    const groups: Record<string, UINotification[]> = {
         'Today': [],
         'Yesterday': [],
         'Earlier': []
@@ -359,10 +355,10 @@ function groupNotificationsByDate(notifications: Notification[]): Record<string,
 }
 
 // Generate mock notifications (replace with real API data)
-function generateMockNotifications(): Notification[] {
+function generateMockNotifications(): UINotification[] {
     return [
         {
-            id: '1',
+            id: 1,
             type: NotificationType.ORDER_PLACED,
             title: 'New Order Received',
             message: 'Order #12345 has been placed. Total amount: ₦15,500',
@@ -371,7 +367,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12345' }
         },
         {
-            id: '2',
+            id: 2,
             type: NotificationType.PAYMENT,
             title: 'Payment Confirmed',
             message: 'Payment of ₦25,000 has been confirmed for Order #12344',
@@ -380,7 +376,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12344' }
         },
         {
-            id: '3',
+            id: 3,
             type: NotificationType.DELIVERY,
             title: 'Order Out for Delivery',
             message: 'Order #12343 is now out for delivery',
@@ -389,7 +385,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12343' }
         },
         {
-            id: '4',
+            id: 4,
             type: NotificationType.ORDER_UPDATE,
             title: 'Order Completed',
             message: 'Order #12342 has been successfully delivered',
@@ -398,7 +394,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12342' }
         },
         {
-            id: '5',
+            id: 5,
             type: NotificationType.WITHDRAWAL,
             title: 'Withdrawal Request Approved',
             message: 'Your withdrawal request of ₦50,000 has been approved',
@@ -407,7 +403,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { withdrawalId: 'WD123' }
         },
         {
-            id: '6',
+            id: 6,
             type: NotificationType.ORDER_PLACED,
             title: 'New Order Received',
             message: 'Order #12341 has been placed. Total amount: ₦8,200',
@@ -416,7 +412,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12341' }
         },
         {
-            id: '7',
+            id: 7,
             type: NotificationType.SYSTEM,
             title: 'System Update',
             message: 'The app has been updated with new features and improvements',
@@ -424,7 +420,7 @@ function generateMockNotifications(): Notification[] {
             isRead: true
         },
         {
-            id: '8',
+            id: 8,
             type: NotificationType.PAYMENT,
             title: 'Payment Received',
             message: 'Payment of ₦12,500 received for Order #12340',
@@ -433,7 +429,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12340' }
         },
         {
-            id: '9',
+            id: 9,
             type: NotificationType.ORDER_UPDATE,
             title: 'Order Cancelled',
             message: 'Order #12339 has been cancelled by customer',
@@ -442,7 +438,7 @@ function generateMockNotifications(): Notification[] {
             actionData: { orderId: '12339' }
         },
         {
-            id: '10',
+            id: 10,
             type: NotificationType.MESSAGE,
             title: 'New Message',
             message: 'You have a new message from customer support',
