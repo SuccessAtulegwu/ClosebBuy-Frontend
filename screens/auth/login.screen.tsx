@@ -34,6 +34,15 @@ export function LoginScreen() {
     const [touched, setTouched] = useState<Touched>({});
     const router = useRouter();
 
+  /*   {
+        error && (
+            <View style={styles.errorBox}>
+                <Ionicons name="alert-circle" size={20} color="#ff4757" />
+                <Text style={styles.errorBoxText}>{error}</Text>
+            </View>
+        )
+    } */
+
     // Validation functions
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -5,7 +5,7 @@ import { CreateUserDto, UpdateUserDto } from '@/types/publicDTOTypes';
 import { User } from '@/types/publicTypes';
 import { Role } from '@/types/publicenums';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.3:4000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.5:4000/api';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -44,10 +44,10 @@ export const AuthApiService = {
 
       return {
         success: true,
-        data: data,
+        data: data.data,
       };
     } catch (error: any) {
-      console.error('Create User Error:', error);
+      //console.error('Create User Error:', error);
       return {
         success: false,
         error: error.message || 'Network error occurred',
@@ -83,7 +83,7 @@ export const AuthApiService = {
         data: data,
       };
     } catch (error: any) {
-      console.error('Get User Profile Error:', error);
+      //console.error('Get User Profile Error:', error);
       return {
         success: false,
         error: error.message || 'Network error occurred',
@@ -123,7 +123,7 @@ export const AuthApiService = {
         data: data,
       };
     } catch (error: any) {
-      console.error('Update User Error:', error);
+      //console.error('Update User Error:', error);
       return {
         success: false,
         error: error.message || 'Network error occurred',
@@ -159,7 +159,7 @@ export const AuthApiService = {
         data: data,
       };
     } catch (error: any) {
-      console.error('Verify Token Error:', error);
+      //console.error('Verify Token Error:', error);
       return {
         success: false,
         error: error.message || 'Network error occurred',

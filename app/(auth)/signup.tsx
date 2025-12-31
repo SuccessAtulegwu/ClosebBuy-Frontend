@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -21,6 +20,7 @@ import { signUpUser, clearError } from '@/redux/slices/authSlice';
 import { fontFamilies } from '@/constants/app.constants';
 import { EstateService } from '@/apiServices/estateService';
 import { Estate } from '@/types/publicTypes';
+import { alertService } from '@/utils/alertService';
 
 export default function SignUpScreen() {
   const { theme } = useContext(ThemeContext);
@@ -76,10 +76,14 @@ export default function SignUpScreen() {
         setEstates(response.data);
         setFilteredEstates(response.data);
       } else {
-        Alert.alert('Error', 'Failed to load estates. Please try again.');
+        alertService.error(
+          'Error',
+          'Failed to load estates. Please try again.'
+        );
       }
     } catch (error) {
-      console.error('Fetch estates error:', error);
+      // Don't log to console, show user-friendly error
+      alertService.error('Error', error);
     } finally {
       setLoadingEstates(false);
     }
@@ -161,20 +165,26 @@ export default function SignUpScreen() {
         })
       ).unwrap();
 
-      // Navigate to home on success
-      Alert.alert('Success', 'Account created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => router.replace('/(auth)/login'),
-        },
-      ]);
+      // Navigate to login on success
+      alertService.success(
+        'Success',
+        'Account created successfully! Please login to continue.',
+        [
+          {
+            text: 'Login',
+            style: 'default',
+            onPress: () => router.replace('/(auth)/login'),
+          },
+        ]
+      );
     } catch (error: any) {
-      Alert.alert('Sign Up Failed', error || 'An error occurred during sign up');
+      alertService.error('Sign Up Failed', error);
     }
   };
 
   const handleLogin = () => {
     router.push('/(auth)/login');
+    dispatch(clearError());
   };
 
   return (
@@ -488,7 +498,7 @@ export default function SignUpScreen() {
                       <Ionicons
                         name="checkmark-circle"
                         size={24}
-                        color={theme.colors.primary}
+                        color={theme.primary}
                       />
                     )}
                   </TouchableOpacity>

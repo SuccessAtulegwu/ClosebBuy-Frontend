@@ -28,10 +28,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!isAuthenticated && !isAuthRoute) {
       // Redirect to login if not authenticated
-      router.replace('/(auth)/login' as any);
+      router.replace('/(auth)/login');
     } else if (isAuthenticated && isAuthRoute) {
       // Redirect to home if already authenticated
-      router.replace('/(tabs)' as any);
+      router.replace('/(tabs)');
     }
   }, [isAuthenticated, isInitialized, pathname]);
 

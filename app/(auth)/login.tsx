@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +16,7 @@ import { ThemeContext } from '@/context/ThemeContext';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { signInUser, clearError } from '@/redux/slices/authSlice';
 import { fontFamilies } from '@/constants/app.constants';
+import { alertService } from '@/utils/alertService';
 
 export default function LoginScreen() {
   const { theme } = useContext(ThemeContext);
@@ -76,7 +76,7 @@ export default function LoginScreen() {
       // Navigate to home on success
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert('Login Failed', error || 'An error occurred during login');
+      alertService.error('Login Failed', error);
     }
   };
 
@@ -86,6 +86,7 @@ export default function LoginScreen() {
 
   const handleSignUp = () => {
     router.push('/(auth)/signup');
+    dispatch(clearError());
   };
 
   return (

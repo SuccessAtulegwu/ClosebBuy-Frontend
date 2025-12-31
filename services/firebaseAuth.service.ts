@@ -42,13 +42,14 @@ export const FirebaseAuthService = {
 
       // Get ID token
       const token = await userCredential.user.getIdToken();
+      
 
       return {
         user: userCredential.user,
         token,
       };
     } catch (error: any) {
-      console.error('Firebase Sign Up Error:', error);
+      // Don't log error to console, just throw formatted message
       throw new Error(getFirebaseErrorMessage(error.code));
     }
   },
@@ -72,7 +73,7 @@ export const FirebaseAuthService = {
         token,
       };
     } catch (error: any) {
-      console.error('Firebase Sign In Error:', error);
+      // Don't log error to console, just throw formatted message
       throw new Error(getFirebaseErrorMessage(error.code));
     }
   },
@@ -84,7 +85,7 @@ export const FirebaseAuthService = {
     try {
       await signOut(auth);
     } catch (error: any) {
-      console.error('Firebase Sign Out Error:', error);
+      // Don't log error to console, just throw formatted message
       throw new Error('Failed to sign out');
     }
   },
@@ -96,7 +97,7 @@ export const FirebaseAuthService = {
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error: any) {
-      console.error('Firebase Password Reset Error:', error);
+      // Don't log error to console, just throw formatted message
       throw new Error(getFirebaseErrorMessage(error.code));
     }
   },
@@ -112,7 +113,7 @@ export const FirebaseAuthService = {
       }
       return null;
     } catch (error) {
-      console.error('Get Token Error:', error);
+      // Silently return null on token error
       return null;
     }
   },

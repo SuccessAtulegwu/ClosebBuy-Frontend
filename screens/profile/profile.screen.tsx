@@ -8,6 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { HomeHeader } from '@/components/HomeHeader';
 import { Dimensions } from 'react-native';
+import { useAppDispatch } from '@/redux/hooks';
+import { signOutUser } from '@/redux/slices/authSlice';
 
 export function ProfileScreen() {
     const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
@@ -15,6 +17,7 @@ export function ProfileScreen() {
     const inset = useSafeAreaInsets();
     const router = useRouter();
     const [logging, setLogging] = useState(false);
+     const dispatch = useAppDispatch();
 
     // Updated user info to match design structure (Name + Email)
     // In a real app, this would likely come from a context or prop
@@ -28,7 +31,8 @@ export function ProfileScreen() {
         setLogging(true);
         setTimeout(() => {
             setLogging(false);
-            router.push('/(routes)/auth/google');
+            //router.push('/(auth)/login');
+            dispatch(signOutUser());
         }, 2000);
     }
 

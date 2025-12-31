@@ -5,7 +5,7 @@ import { Order, DeliveryDetail, Product, Payment } from '@/types/publicTypes';
 import { CreateOrderDto, CreateDeliveryDetailDto } from '@/types/publicDTOTypes';
 import { OrderStatus } from '@/types/publicenums';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.3:4000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.5:4000/api';
 
 interface ApiResponse<T> {
   success: boolean;

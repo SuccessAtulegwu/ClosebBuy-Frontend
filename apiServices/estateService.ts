@@ -3,7 +3,7 @@
 
 import { Estate } from '@/types/publicTypes';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.3:4000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.5:4000/api';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -18,8 +18,6 @@ export const EstateService = {
    */
   async getEstates(): Promise<ApiResponse<Estate[]>> {
     try {
-      console.log('🔍 Fetching estates from:', `${API_BASE_URL}/estates/all`);
-      
       const response = await fetch(`${API_BASE_URL}/estates/all`, {
         method: 'GET',
         headers: {
@@ -27,9 +25,6 @@ export const EstateService = {
         },
       });
 
-      console.log('✅ Response status:', response.status);
-      console.log('✅ Response ok:', response.ok);
-      
       const data = await response.json();
 
       if (!response.ok) {
@@ -40,16 +35,12 @@ export const EstateService = {
         };
       }
 
-      console.log('✅ Estates fetched successfully:', data);
       return {
         success: true,
-        data: data,
+        data: data.data,
       };
     } catch (error: any) {
       console.error('❌ Get Estates Error:', error);
-      console.error('❌ Error name:', error.name);
-      console.error('❌ Error message:', error.message);
-      console.error('❌ API URL was:', API_BASE_URL);
       return {
         success: false,
         error: error.message || 'Network error occurred',

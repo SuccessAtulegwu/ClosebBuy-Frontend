@@ -162,7 +162,7 @@ export const restoreSession = createAsyncThunk(
         token: token[1],
       };
     } catch (error: any) {
-      console.error('Restore Session Error:', error);
+      // Silently fail restore session, don't log to console
       return null;
     }
   }
@@ -234,9 +234,8 @@ const authSlice = createSlice({
       })
       .addCase(signUpUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        // Don't set isAuthenticated to true on signup
+        // User needs to login after signing up
       })
       .addCase(signUpUser.rejected, (state, action) => {
         state.loading = false;
